@@ -167,3 +167,4 @@ copper.egg-info
 docker_data
 docker_logs
 
+!.dvc

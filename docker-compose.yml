@@ -9,11 +9,9 @@ services:
     image: train
     # Mount volumes
     volumes:
-      # - workspace:/workspace
       - ./docker_data:/workspace/data
       - ./docker_logs:/workspace/logs
     command: ["copper_train", "-m", "hydra/launcher=joblib", "hydra.launcher.n_jobs=3", "experiment=cifar10", "model.patch_size=4,8,16", "data.num_workers=0"]
-    # command: ["copper_train", "-m", "hydra/launcher=joblib", "hydra.launcher.n_jobs=1", "experiment=cifar10", "model.patch_size=16", "data.num_workers=0"]
     restart: on-failure
 
   logger:
@@ -30,11 +28,5 @@ services:
     ports:
       - "80:5000"
     working_dir: "/workspace/mlflow"
-    # command: [ "/bin/sh" , "-c" , "cd /workspace/logs/mlflow && mlflow ui --host 0.0.0.0" ]
-    # command: cd /workspace/logs/mlflow && mlflow ui --host 0.0.0.0
     command: mlflow ui --host 0.0.0.0
-    # command: mlflow ui --backend-store-uri file:///logs/mlflow --host 0.0.0.0    
     restart: on-failure
-
-# volumes:
-#   workspace:
