@@ -58,6 +58,12 @@ Shown the comparison of validation accuracy and validation loss for different hy
 ![Screenshot](Tensor_Board.JPG)
 
 
+## Best Param Run 
+```
+! copper_train -m experiment=gpt_best_params data.num_workers=16 logger=many_loggers
+
+```
+
 ## Contributors
 - Aman Jaipuria
 - Anurag Mittal
