@@ -52,6 +52,12 @@ copper_train --help
 copprt_train experiment=gpt --help
 ```
 
+### TensorBoard Hparams Results Comparison
+Shown the comparison of validation accuracy and validation loss for different hyper perameters.
+
+![Screenshot](Tensor_Board.JPG)
+
+
 ## Contributors
 - Aman Jaipuria
 - Anurag Mittal
