@@ -1,31 +1,57 @@
-# Experiment Tracking
+# Custom GPT model on Harry Potter Books
 
-## Training ViT Module on CIFAR10 dataset (multirun using joblib)
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=for-the-badge&logo=PyTorch&logoColor=white)![hydra](https://img.shields.io/badge/Config-Hydra_1.3-89b8cd)![PyTorch Lightning](https://img.shields.io/badge/lightning-2.0.4-blue.svg?logo=PyTorch%20Lightning)![einops](https://img.shields.io/badge/einops-0.6-green)![Tiktoken](https://img.shields.io/badge/TikToken-0.4-orange)
 
-## Model Training and Testing
 
-1. Run "docker-compose build" to build train and logger images.
-2. Run "docker-compose run train" to start training your ViT model on the CIFAR10 dataset for three different patch sizes 4, 8, and 16.
-Note: Training inside docker will be a multirun using joblib. There are five experiments conducted based on three different patch sizes. Training code running inside docker is:
-"copper_train -m hydra/launcher=joblib hydra.launcher.n_jobs=3 experiment=cifar10 model.patch_size=4,8,16 data.num_workers=0".
-3. Run "docker-compose run --service-ports logger" to start mlflow logging ui. Open "localhost:5000" inside your browser to view mlflow logs.
 
-## DVC Setup
-- Install dvc using "pip install dvc".
-- Initialized DVC using `dvc init`. (you will find a .dvc folder created for your project)
-- Add data to DVC : `dvc add docker_data`.
-- Add logs & model to DVC : `dvc add docker_logs`.
+## Features
+- Dataset used: <a href="https://github.com/formcept/whiteboard/raw/master/nbviewer/notebooks/data/harrypotter/" target="_blank">Harry Potter Books</a>
+- Uses <a href="https://github.com/openai/tiktoken" target="_blank">TikToken</a> tokeniser to encode the data, a tokeniser used with OpenAI's models.
+- Model training and evaluation done using Pytorch Lightning.
+- Experiments configuration controls done using Hydra.
+- Hyperparameter tuning done using Hydra <a href="https://hydra.cc/docs/plugins/optuna_sweeper/" target="_blank">Optuna Sweeper plugin</a>. 
+- Best Learning Rate and Best Batch size to start training found using Tuner of Pytorch Lightning.
 
-- To track the changes with git, run: `git add docker_data.dvc .gitignore`
-- To enable auto staging, run: `dvc config core.autostage true`
 
-You will find two files created: `docker_data.dvc` & `docker_logs.dvc`.
+## Steps to follow
+```
+## Use below commands to run in the terminal. 
+## To run in python or colab code cell, use '!' before every command to make the commands run in terminal. 
 
-## Integrating local storage with DVC
-- Add data & logs to local folder dvc-data: `dvc remote add -d local /workspace/dvc-data`
-- Check if a local remote storage has been added by using this command: `dvc remote list` (it will give you list of all remote storage for your project)
-- Push the data using : `dvc push -r local`
-- Pull data from local storage : `dvc pull -r local`
+# 1. Clone the project repo: 
+git clone https://github.com/AKJ21/gpt-lightning-template.git gpt
 
-Group Members:
-Aman Jaipuria, Anurag Mittal
+# 2. Get to the root folder of the project
+cd gpt
+
+# 3. Install required libraries and setup
+pip install -r requirements.txt && pip install -e .
+
+# 4. Train GPT model
+# "-m" enables multirun.
+# Hyperparameters space defined inside optuna cofig file which is called using "hparams_search=gpt_optuna"
+# Data, model, train, and other configurations overridden using "experiment=gpt".
+# For logging, we are using aim, mlflow, tensorboard which are called using "logger=many_loggers".
+
+copper_train -m hparams_search=gpt_optuna experiment=gpt data.num_workers=16 logger=many_loggers
+
+## 5. Experiment tracking
+aim up
+```
+
+Default trainer is set to auto. If want to use CPU/GPU, you can mention as below:
+- For CPU: `copper_train -m hparams_search=gpt_optuna experiment=gpt data.num_workers=16 logger=many_loggers trainer=cpu`
+- For GPU: `copper_train -m hparams_search=gpt_optuna experiment=gpt data.num_workers=16 logger=many_loggers trainer=gpu`
+
+## Check complete parameters list
+```
+# 1. Default parameters
+copper_train --help
+
+# 2. Specific experiment parameters
+copprt_train experiment=gpt --help
+```
+
+## Contributors
+- Aman Jaipuria
+- Anurag Mittal

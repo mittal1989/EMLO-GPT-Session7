@@ -2,6 +2,6 @@
 
 defaults:
   - csv.yaml
-  # - aim.yaml
+  - aim.yaml
   - mlflow.yaml
   - tensorboard.yaml
