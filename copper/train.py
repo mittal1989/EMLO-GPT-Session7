@@ -9,12 +9,12 @@ import mlflow.pytorch
 from mlflow import MlflowClient
 from lightning.pytorch.loggers.mlflow import MLFlowLogger
 
-from copper import utils1
+from copper import utils
 
-log = utils1.get_pylogger(__name__)
+log = utils.get_pylogger(__name__)
 
 
-@utils1.task_wrapper
+@utils.task_wrapper
 def train(cfg: DictConfig) -> Tuple[dict, dict]:
     # set seed for random number generators in pytorch, numpy and python.random
     if cfg.get("seed"):
@@ -27,10 +27,10 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     model: L.LightningModule = hydra.utils.instantiate(cfg.model)
 
     log.info("Instantiating loggers...")
-    logger: List[Logger] = utils1.instantiate_loggers(cfg.get("logger"))
+    logger: List[Logger] = utils.instantiate_loggers(cfg.get("logger"))
 
     log.info("Instantiating callbacks...")
-    callbacks: List[Callback] = utils1.instantiate_callbacks(cfg.get("callbacks"))
+    callbacks: List[Callback] = utils.instantiate_callbacks(cfg.get("callbacks"))
 
     log.info(f"Instantiating trainer <{cfg.trainer._target_}>")
     trainer: L.Trainer = hydra.utils.instantiate(cfg.trainer, callbacks=callbacks, logger=logger)
@@ -46,7 +46,7 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
 
     if logger:
         log.info("Logging hyperparameters!")
-        utils1.log_hyperparameters(object_dict)
+        utils.log_hyperparameters(object_dict)
 
     if cfg.get("compile"):
         model = torch.compile(model)
@@ -92,7 +92,7 @@ def main(cfg: DictConfig):
 
     # this will be used by hydra later for optimization
     # safely retrieve metric value for hydra-based hyperparameter optimization
-    metric_value = utils1.get_metric_value(
+    metric_value = utils.get_metric_value(
         metric_dict=metric_dict, metric_name=cfg.get("optimized_metric")
     )
 
