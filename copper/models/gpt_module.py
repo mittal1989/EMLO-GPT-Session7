@@ -293,6 +293,17 @@ class GPTLitModule(LightningModule):
         # otherwise metric would be reset by lightning after each epoch
         self.log("val/loss_best", self.val_loss_best.compute(), sync_dist=True, prog_bar=True)
 
+    def test_step(self, batch: Any, batch_idx: int):
+        loss = self.model_step(batch)
+
+        # update and log metrics
+        self.test_loss(loss)
+        self.log("test/loss", self.test_loss, on_step=False,
+                 on_epoch=True, prog_bar=True)
+
+    def on_test_epoch_end(self):
+        pass
+
     def configure_optimizers(self):
         """Choose what optimizers and learning-rate schedulers to use in your optimization.
         Normally you'd need one. But in the case of GANs or similar you might have multiple.
